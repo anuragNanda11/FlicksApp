@@ -48,7 +48,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func loadDataFromNetwork() {
         
-                
+        
         
         
         
@@ -112,15 +112,43 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         if let posterPath = movie["poster_path"] as? String {
             let baseUrl = "http://image.tmdb.org/t/p/w500/"
-            let imageUrl = NSURL(string: baseUrl + posterPath)
-            cell.posterView.setImageWithURL(imageUrl!)
-        }
+            let imageRequest = NSURLRequest(URL: NSURL(string: baseUrl + posterPath)!)
+
+            cell.posterView.setImageWithURLRequest(
+                imageRequest,
+                placeholderImage: nil,
+                success: { (imageRequest, imageResponse, image) -> Void in
+                    
+                    // imageResponse will be nil if the image is cached
+                    if imageResponse != nil {
+                        print("Image was NOT cached, fade in image")
+                         cell.posterView.alpha = 0.0
+                        cell.posterView.image = image
+                        UIView.animateWithDuration(0.3, animations: { () -> Void in
+                             cell.posterView.alpha = 1.0
+                        })
+                    } else {
+                        print("Image was cached so just update the image")
+                        cell.posterView.image = image
+                    }
+                },
+                failure: { (imageRequest, imageResponse, error) -> Void in
+                    // do something for the failure condition
+            })
+        
+        
+        
+        
+        
+        
         
 
+            }
         print(title)
         print(overview)
         return cell
-    }
+
+}
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
        
