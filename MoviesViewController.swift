@@ -23,8 +23,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
-        tableView.delegate = self
         filteredMovies = movies
+        ///////////////
+        loadDataFromNetwork()
+        tableView.delegate = self
+        self.tableView.reloadData()
+        ///////////
         
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
@@ -36,7 +40,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
-        loadDataFromNetwork()
         tableView.insertSubview(refreshControl, atIndex: 0)
 
     }
