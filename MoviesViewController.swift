@@ -21,14 +21,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     
     override func viewDidLoad() {
+
         super.viewDidLoad()
-        tableView.dataSource = self
-        filteredMovies = movies
-        ///////////////
         loadDataFromNetwork()
+        tableView.dataSource = self
         tableView.delegate = self
-        self.tableView.reloadData()
-        ///////////
         
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
@@ -51,6 +48,10 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     
     func loadDataFromNetwork() {
         
+                
+        
+        
+        
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
         let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
@@ -68,6 +69,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                             NSLog("response: \(responseDictionary)")
                             
                             self.movies = responseDictionary["results"] as! [NSDictionary]
+                            self.filteredMovies = self.movies
                             self.tableView.reloadData()
                     }
                 }
