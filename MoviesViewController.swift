@@ -32,14 +32,15 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.sizeToFit()
         tableView.tableHeaderView = searchController.searchBar
-        definesPresentationContext = true
+        self.definesPresentationContext = true
 
-
+       
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
 
     }
+    
     func refreshControlAction(refreshControl: UIRefreshControl) {
         
          loadDataFromNetwork()
@@ -85,7 +86,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
-    @available(iOS 2.0, *)
+
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let filteredMovies = filteredMovies {
             return filteredMovies.count
@@ -96,8 +97,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     
-    
-    @available(iOS 2.0, *)
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
@@ -109,6 +108,12 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         cell.titleLable.text = title
         cell.overviewLabel.text = overview
         
+        if(indexPath.row % 2 == 0) {
+            cell.backgroundColor = UIColor.whiteColor()
+            
+        } else {
+            cell.backgroundColor = UIColor.lightGrayColor()
+        }
         
         if let posterPath = movie["poster_path"] as? String {
             let baseUrl = "http://image.tmdb.org/t/p/w500/"
@@ -151,14 +156,11 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
 }
     
     func updateSearchResultsForSearchController(searchController: UISearchController) {
-       
+
             if let searchText = searchController.searchBar.text {
-                print("insideUpdateSearchResult")
-            filteredMovies = searchText.isEmpty ? movies : movies!.filter({(movie: NSDictionary) -> Bool in
-                print (movie["title"] as! String)
+                filteredMovies = searchText.isEmpty ? movies : movies!.filter({(movie: NSDictionary) -> Bool in
                 return (movie["title"] as! String).rangeOfString(searchText, options: .CaseInsensitiveSearch) != nil
             })
-            
             tableView.reloadData()
         }
 }
