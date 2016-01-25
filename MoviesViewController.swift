@@ -32,7 +32,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.sizeToFit()
         tableView.tableHeaderView = searchController.searchBar
-        self.definesPresentationContext = true
+        definesPresentationContext = true
 
        
         let refreshControl = UIRefreshControl()
