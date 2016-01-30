@@ -15,7 +15,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
+
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        
+        let nowPlayingNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
+        
+        let nowPlayingViewController
+        = nowPlayingNavigationController.topViewController as! MoviesViewController
+        
+        nowPlayingViewController.endpoint = "now_playing"
+        
+        nowPlayingNavigationController.tabBarItem.title = "Now Playing"
+        nowPlayingNavigationController.tabBarItem.image = UIImage(named: "nowPlaying")
+        nowPlayingViewController.navigationItem.title = "Now Playing"
+
+        
+        let topRatedNavigationController = storyboard.instantiateViewControllerWithIdentifier("MoviesNavigationController") as! UINavigationController
+        let topRatedViewController = topRatedNavigationController.topViewController as! MoviesViewController
+        topRatedViewController.endpoint = "top_rated"
+        topRatedNavigationController.tabBarItem.title = "Top Rated"
+        topRatedViewController.navigationItem.title = "Top Rated"
+
+        topRatedNavigationController.tabBarItem.image = UIImage(named: "topRated")
+
+
+        
+        let tabBarController = UITabBarController()
+        UITabBar.appearance().tintColor =  UIColor(red: 0.6, green: 1.0, blue: 0.5, alpha: 0.8)
+        UITabBar.appearance().barTintColor = UIColor.blackColor()
+        tabBarController.viewControllers=[nowPlayingNavigationController, topRatedNavigationController]
+        
+        window?.rootViewController = tabBarController
+        window?.makeKeyAndVisible()
+
+
+        
         return true
     }
 

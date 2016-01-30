@@ -16,6 +16,9 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     var movies: [NSDictionary]?
     var filteredMovies: [NSDictionary]!
     var searchController: UISearchController!
+    var endpoint: String!
+    
+    
 
 
     
@@ -29,17 +32,42 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         searchController = UISearchController(searchResultsController: nil)
         searchController.searchResultsUpdater = self
+        
+        ///
+        self.searchController.hidesNavigationBarDuringPresentation = false
+
         searchController.dimsBackgroundDuringPresentation = false
         searchController.searchBar.sizeToFit()
-        tableView.tableHeaderView = searchController.searchBar
-        definesPresentationContext = true
+        self.navigationItem.titleView = searchController.searchBar
+
+        //tableView.tableHeaderView = searchController.searchBar
+        self.definesPresentationContext = true
 
        
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "refreshControlAction:", forControlEvents: UIControlEvents.ValueChanged)
         tableView.insertSubview(refreshControl, atIndex: 0)
+        
+        
+        
 
-    }
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.tintColor = UIColor(red: 0.6, green: 1.0, blue: 0.5, alpha: 0.8)
+            navigationBar.barStyle = UIBarStyle.Black
+
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.grayColor().colorWithAlphaComponent(0.5)
+            shadow.shadowOffset = CGSizeMake(2, 2);
+            shadow.shadowBlurRadius = 4;
+            navigationBar.titleTextAttributes = [
+                NSFontAttributeName : UIFont.boldSystemFontOfSize(22),
+                NSForegroundColorAttributeName : UIColor(red: 0.5, green: 0.15, blue: 0.15, alpha: 0.8),
+                NSShadowAttributeName : shadow
+            ]
+        }
+        
+        
+}
     
     func refreshControlAction(refreshControl: UIRefreshControl) {
         
@@ -54,7 +82,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         
         let apiKey = "a07e22bc18f5cb106bfe4cc1f83ad8ed"
-        let url = NSURL(string:"https://api.themoviedb.org/3/movie/now_playing?api_key=\(apiKey)")
+        let url = NSURL(string:"https://api.themoviedb.org/3/movie/\(endpoint)?api_key=\(apiKey)")
         let request = NSURLRequest(URL: url!)
         let session = NSURLSession(
             configuration: NSURLSessionConfiguration.defaultSessionConfiguration(),
@@ -69,7 +97,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
                         data, options:[]) as? NSDictionary {
                             NSLog("response: \(responseDictionary)")
                             
-                            self.movies = responseDictionary["results"] as! [NSDictionary]
+                            self.movies = (responseDictionary["results"] as! [NSDictionary])
                             self.filteredMovies = self.movies
                             self.tableView.reloadData()
                     }
@@ -100,6 +128,7 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCell
+        cell.selectionStyle = .None
         
         let movie = filteredMovies![indexPath.row]
         let title = movie["title"] as! String
@@ -107,13 +136,6 @@ class MoviesViewController: UIViewController, UITableViewDataSource, UITableView
         
         cell.titleLable.text = title
         cell.overviewLabel.text = overview
-        
-        if(indexPath.row % 2 == 0) {
-            cell.backgroundColor = UIColor.whiteColor()
-            
-        } else {
-            cell.backgroundColor = UIColor.lightGrayColor()
-        }
         
         if let posterPath = movie["poster_path"] as? String {
             let baseUrl = "http://image.tmdb.org/t/p/w500/"
